@@ -9,6 +9,73 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        GoogleAuthProvider,
+        signInWithPopup,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+        query,
+        orderBy,
+        limit,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+      // Your Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDJFddqC8eQeD0o7dPZWrOkM4ssTP5rJy4",
+        authDomain: "wastenot-d274c.firebaseapp.com",
+        projectId: "wastenot-d274c",
+        storageBucket: "wastenot-d274c.firebasestorage.app",
+        messagingSenderId: "1068322214232",
+        appId: "1:1068322214232:web:8589802d07300e6ae9552d",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const storage = getStorage(app);
+      const db = getFirestore(app);
+      const googleProvider = new GoogleAuthProvider();
+
+      // Make Firebase services available globally
+      window.auth = auth;
+      window.storage = storage;
+      window.db = db;
+      window.firebaseRefs = { ref, uploadBytes, getDownloadURL };
+      window.firebaseFirestore = {
+        collection,
+        addDoc,
+        getDocs,
+        query,
+        orderBy,
+        limit,
+      };
+      window.firebaseAuth = {
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        GoogleAuthProvider,
+        signInWithPopup,
+        googleProvider,
+      };
+    </script>
     <style>
       /* Custom styles that can't be done with Tailwind */
       .gradient-bg {
@@ -687,185 +754,185 @@
           >
             <i class="fas fa-times"></i>
           </button>
-
           <div class="p-8">
-            <div class="text-center mb-8">
-              <h3 class="text-2xl font-bold text-gray-800">Welcome Back</h3>
-              <p class="text-gray-600">Login to your account or sign up</p>
-            </div>
-
-            <form id="login-form" class="mb-6">
-              <div class="mb-4">
-                <label
-                  for="email"
-                  class="block text-sm font-medium text-gray-700 mb-2"
-                  >Email</label
-                >
-                <input
-                  type="email"
-                  id="email"
-                  class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="your@email.com"
-                />
+            <!-- Login Form -->
+            <div id="login-form-container">
+              <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-gray-800">Welcome Back</h3>
+                <p class="text-gray-600">Login to your account or sign up</p>
               </div>
+              <form id="login-form" class="mb-6">
+                <div class="mb-4">
+                  <label
+                    for="email"
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    id="email"
+                    class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="your@email.com"
+                  />
+                </div>
 
-              <div class="mb-6">
-                <label
-                  for="password"
-                  class="block text-sm font-medium text-gray-700 mb-2"
-                  >Password</label
-                >
-                <input
-                  type="password"
-                  id="password"
-                  class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="••••••••"
-                />
-              </div>
+                <div class="mb-6">
+                  <label
+                    for="password"
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                    >Password</label
+                  >
+                  <input
+                    type="password"
+                    id="password"
+                    class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="••••••••"
+                  />
+                </div>
 
-              <button
-                type="submit"
-                class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
-              >
-                Login
-              </button>
-            </form>
-
-            <div class="flex items-center mb-6">
-              <div class="flex-1 border-t border-gray-300"></div>
-              <span class="px-4 text-gray-500">or</span>
-              <div class="flex-1 border-t border-gray-300"></div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 mb-6">
-              <button
-                class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300"
-              >
-                <i class="fab fa-google text-red-500 mr-2"></i>
-                <span>Google</span>
-              </button>
-              <button
-                class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300"
-              >
-                <i class="fab fa-facebook-f text-blue-600 mr-2"></i>
-                <span>Facebook</span>
-              </button>
-            </div>
-
-            <div class="text-center">
-              <p class="text-gray-600">
-                Don't have an account?
                 <button
-                  onclick="switchToSignup()"
-                  class="text-green-500 hover:text-green-600 font-medium"
+                  type="submit"
+                  class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
                 >
-                  Sign up
+                  Login
                 </button>
-              </p>
+              </form>
+
+              <div class="flex items-center mb-6">
+                <div class="flex-1 border-t border-gray-300"></div>
+                <span class="px-4 text-gray-500">or</span>
+                <div class="flex-1 border-t border-gray-300"></div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4 mb-6">
+                <button
+                  class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300"
+                >
+                  <i class="fab fa-google text-red-500 mr-2"></i>
+                  <span>Google</span>
+                </button>
+                <button
+                  class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-300"
+                >
+                  <i class="fab fa-facebook-f text-blue-600 mr-2"></i>
+                  <span>Facebook</span>
+                </button>
+              </div>
+
+              <div class="text-center">
+                <p class="text-gray-600">
+                  Don't have an account?
+                  <button
+                    onclick="switchToSignup()"
+                    class="text-green-500 hover:text-green-600 font-medium"
+                  >
+                    Sign up
+                  </button>
+                </p>
+              </div>
+            </div>
+            <!-- Signup Form -->
+            <div id="signup-form-container" class="hidden">
+              <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-gray-800">
+                  Create an Account
+                </h3>
+                <p class="text-gray-600">Join our community today</p>
+              </div>
+
+              <form id="register-form" class="mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label
+                      for="first-name"
+                      class="block text-sm font-medium text-gray-700 mb-2"
+                      >First Name</label
+                    >
+                    <input
+                      type="text"
+                      id="first-name"
+                      class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="John"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="last-name"
+                      class="block text-sm font-medium text-gray-700 mb-2"
+                      >Last Name</label
+                    >
+                    <input
+                      type="text"
+                      id="last-name"
+                      class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="Doe"
+                    />
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label
+                    for="signup-email"
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    id="signup-email"
+                    class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="your@email.com"
+                  />
+                </div>
+
+                <div class="mb-4">
+                  <label
+                    for="signup-password"
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                    >Password</label
+                  >
+                  <input
+                    type="password"
+                    id="signup-password"
+                    class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="••••••••"
+                  />
+                </div>
+
+                <div class="mb-6">
+                  <label
+                    for="confirm-password"
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                    >Confirm Password</label
+                  >
+                  <input
+                    type="password"
+                    id="confirm-password"
+                    class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="••••••••"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
+                >
+                  Sign Up
+                </button>
+              </form>
+
+              <div class="text-center">
+                <p class="text-gray-600">
+                  Already have an account?
+                  <button
+                    onclick="switchToLogin()"
+                    class="text-green-500 hover:text-green-600 font-medium"
+                  >
+                    Login
+                  </button>
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Signup Form (hidden by default) -->
-    <div id="signup-form" class="hidden">
-      <div class="p-8">
-        <div class="text-center mb-8">
-          <h3 class="text-2xl font-bold text-gray-800">Create an Account</h3>
-          <p class="text-gray-600">Join our community today</p>
-        </div>
-
-        <form id="register-form" class="mb-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label
-                for="first-name"
-                class="block text-sm font-medium text-gray-700 mb-2"
-                >First Name</label
-              >
-              <input
-                type="text"
-                id="first-name"
-                class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="John"
-              />
-            </div>
-            <div>
-              <label
-                for="last-name"
-                class="block text-sm font-medium text-gray-700 mb-2"
-                >Last Name</label
-              >
-              <input
-                type="text"
-                id="last-name"
-                class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="Doe"
-              />
-            </div>
-          </div>
-
-          <div class="mb-4">
-            <label
-              for="signup-email"
-              class="block text-sm font-medium text-gray-700 mb-2"
-              >Email</label
-            >
-            <input
-              type="email"
-              id="signup-email"
-              class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="your@email.com"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label
-              for="signup-password"
-              class="block text-sm font-medium text-gray-700 mb-2"
-              >Password</label
-            >
-            <input
-              type="password"
-              id="signup-password"
-              class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <div class="mb-6">
-            <label
-              for="confirm-password"
-              class="block text-sm font-medium text-gray-700 mb-2"
-              >Confirm Password</label
-            >
-            <input
-              type="password"
-              id="confirm-password"
-              class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button
-            type="submit"
-            class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold transition duration-300"
-          >
-            Sign Up
-          </button>
-        </form>
-
-        <div class="text-center">
-          <p class="text-gray-600">
-            Already have an account?
-            <button
-              onclick="switchToLogin()"
-              class="text-green-500 hover:text-green-600 font-medium"
-            >
-              Login
-            </button>
-          </p>
         </div>
       </div>
     </div>
@@ -964,14 +1031,20 @@
 
       // Switch to signup form
       function switchToSignup() {
-        loginForm.style.display = "none";
-        signupForm.classList.remove("hidden");
+        document.getElementById("login-form-container").classList.add("hidden");
+        document
+          .getElementById("signup-form-container")
+          .classList.remove("hidden");
       }
 
       // Switch to login form
       function switchToLogin() {
-        signupForm.classList.add("hidden");
-        loginForm.style.display = "block";
+        document
+          .getElementById("signup-form-container")
+          .classList.add("hidden");
+        document
+          .getElementById("login-form-container")
+          .classList.remove("hidden");
       }
 
       // Load sample items
@@ -1002,24 +1075,62 @@
       }
 
       // Form submission handlers
-      loginForm.addEventListener("submit", (e) => {
+      loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        alert("Login functionality will be implemented in the next phase!");
-        closeAuthModal();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        try {
+          await window.firebaseAuth.signInWithEmailAndPassword(
+            window.auth,
+            email,
+            password
+          );
+          alert("Logged in successfully!");
+          closeAuthModal();
+        } catch (error) {
+          if (
+            error.code === "auth/invalid-login-credentials" ||
+            error.code === "auth/user-not-found"
+          ) {
+            alert("Invalid email or password. Please try again or sign up.");
+          } else {
+            alert(error.message);
+          }
+        }
       });
 
-      registerForm.addEventListener("submit", (e) => {
+      registerForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        alert("Account created successfully! You can now login.");
-        switchToLogin();
+        const email = document.getElementById("signup-email").value;
+        const password = document.getElementById("signup-password").value;
+        try {
+          await window.firebaseAuth.createUserWithEmailAndPassword(
+            window.auth,
+            email,
+            password
+          );
+          alert("Account created successfully! You can now login.");
+          switchToLogin();
+        } catch (error) {
+          alert(error.message);
+        }
       });
 
-      donationForm.addEventListener("submit", (e) => {
+      donationForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const itemTitle = document.getElementById("item-title").value;
-        alert(
-          `Thank you for donating "${itemTitle}"! Your item will be listed shortly.`
-        );
+        const fileInput = document.getElementById("file-upload");
+        const file = fileInput.files[0];
+        let photoURL = "";
+        if (file) {
+          const storageRef = window.firebaseRefs.ref(
+            window.storage,
+            "item-photos/" + file.name
+          );
+          await window.firebaseRefs.uploadBytes(storageRef, file);
+          photoURL = await window.firebaseRefs.getDownloadURL(storageRef);
+        }
+        // Save item info to Firestore, including photoURL
+        alert(`Thank you for donating! Photo uploaded: ${photoURL}`);
         donationForm.reset();
       });
 
