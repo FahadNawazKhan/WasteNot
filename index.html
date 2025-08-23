@@ -1033,6 +1033,8 @@
       const searchInput = document.querySelector(
         'input[placeholder="Search items..."]'
       );
+      const fileInput = document.getElementById("file-upload");
+      const imagePreview = document.getElementById("image-preview");
 
       // Mobile menu toggle
       mobileMenuButton.addEventListener("click", () => {
@@ -1215,18 +1217,67 @@
         e.preventDefault();
         const fileInput = document.getElementById("file-upload");
         const file = fileInput.files[0];
+        const title = document.getElementById("item-title").value;
+        const category = document.getElementById("item-category").value;
+        const condition = document.getElementById("item-condition").value;
+        const description = document.getElementById("item-description").value;
+
+        if (!title || !category || !condition || !description) {
+          alert("Please fill in all required fields.");
+          return;
+        }
+
         let photoURL = "";
         if (file) {
           const storageRef = window.firebaseRefs.ref(
             window.storage,
-            "item-photos/" + file.name
+            "item-photos/" + Date.now() + "_" + file.name
           );
           await window.firebaseRefs.uploadBytes(storageRef, file);
           photoURL = await window.firebaseRefs.getDownloadURL(storageRef);
         }
-        // Save item info to Firestore, including photoURL
-        alert(`Thank you for donating! Photo uploaded: ${photoURL}`);
+
+        const location = document.getElementById("item-location").value;
+        let lat = null,
+          lng = null;
+        if (window.lastGeoLocation) {
+          lat = window.lastGeoLocation.latitude;
+          lng = window.lastGeoLocation.longitude;
+        }
+
+        await window.firebaseFirestore.addDoc(
+          window.firebaseFirestore.collection(window.db, "items"),
+          {
+            title,
+            description,
+            category,
+            condition,
+            image: photoURL,
+            location,
+            lat,
+            lng,
+            createdAt: Date.now(),
+          }
+        );
+
+        alert("Thank you for donating! Your item is now listed.");
         donationForm.reset();
+        imagePreview.innerHTML = "";
+        fetchAndShowItems();
+      });
+
+      fileInput.addEventListener("change", function () {
+        imagePreview.innerHTML = "";
+        const file = fileInput.files[0];
+        if (file && file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imagePreview.innerHTML = `
+        <img src="${e.target.result}" alt="Preview" class="mx-auto rounded-lg shadow-md max-h-48" />
+      `;
+          };
+          reader.readAsDataURL(file);
+        }
       });
 
       // Initialize the page
